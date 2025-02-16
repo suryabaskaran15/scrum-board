@@ -1,0 +1,141 @@
+// Colors and Variables
+$primary-color: #4a90e2;
+$bg-color: #f8f9fa;
+$border-color: #ddd;
+$task-bg: #fff;
+$task-shadow: rgba(0, 0, 0, 0.1);
+
+// Global Styles
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
+}
+
+body {
+  background-color: $bg-color;
+}
+
+// Container Styling
+.kanban-container {
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.kanban-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+
+  h1 {
+    margin: 0;
+  }
+}
+
+// Task Board Layout
+.kanban-board {
+  display: flex;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: flex-start; // Ensures each column takes its own height
+  flex-wrap: wrap;
+}
+
+.column {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  flex: 1; // Allows columns to grow naturally
+  min-width: 280px;
+  max-width: 100%;
+  background-color: #112c47;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column; // Keeps tasks stacked
+
+  h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: #4a90e2;
+  }
+
+  .tasks-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px; // Adds space between tasks
+  }
+
+  .task {
+    background: #fff;
+    padding: 12px;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s ease-in-out;
+    flex: unset; // Prevents tasks from affecting column height
+
+    &:hover {
+      transform: scale(1.02);
+    }
+  }
+}
+
+// Task Form
+.task-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+
+  input,
+  textarea,
+  select {
+    padding: 8px;
+    border: 1px solid $border-color;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 300px;
+  }
+
+  button {
+    background-color: $primary-color;
+    color: white;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background 0.3s;
+
+    &:hover {
+      background-color: darken($primary-color, 10%);
+    }
+  }
+}
+
+// Responsive Styles
+@media (max-width: 768px) {
+  .kanban-board {
+    flex-direction: column;
+    align-items: center;
+
+    .column {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+
+  .task-form {
+    flex-direction: column;
+    align-items: center;
+
+    input,
+    textarea,
+    select {
+      max-width: 100%;
+    }
+  }
+}

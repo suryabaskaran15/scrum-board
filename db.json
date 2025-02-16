@@ -1,0 +1,79 @@
+{
+  "users": [
+    {
+      "id": "u1",
+      "name": "Jammy"
+    },
+    {
+      "id": "u2",
+      "name": "Max Well"
+    },
+    {
+      "id": "u3",
+      "name": "Alice"
+    }
+  ],
+  "tasks": [
+    {
+      "title": "Task 1",
+      "description": "Description 1",
+      "assignee": {
+        "id": "u2",
+        "name": "Max Well"
+      },
+      "status": "In Progress",
+      "id": "1"
+    },
+    {
+      "title": "Task 22",
+      "description": "Description 2",
+      "assignee": null,
+      "status": "Done",
+      "id": "2"
+    },
+    {
+      "id": "3",
+      "title": "Task 3",
+      "description": "Description 3",
+      "assignee": {
+        "id": "u2",
+        "name": "Max Well"
+      },
+      "status": "To Do"
+    },
+    {
+      "title": "Task 4",
+      "description": "Assigned to Alice",
+      "assignee": null,
+      "status": "In Progress",
+      "id": "4"
+    },
+    {
+      "title": "New",
+      "description": "",
+      "assignee": {
+        "id": "u3",
+        "name": "Alice"
+      },
+      "status": "Done",
+      "id": "77ea"
+    },
+    {
+      "title": "Sample 1",
+      "description": "New ",
+      "assignee": {
+        "id": "u2",
+        "name": "Max Well"
+      },
+      "status": "Done",
+      "id": "7ca4"
+    },
+    {
+      "id": "e2b8",
+      "title": "sample",
+      "description": "",
+      "assignee": null,
+      "status": "To Do"
+    }
+  ]
+}
