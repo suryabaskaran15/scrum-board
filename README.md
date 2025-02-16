@@ -39,7 +39,7 @@ Ensure you have the following installed:
 
 1️⃣ **Clone the repository:**  
 ```sh
-git clone https://github.com/your-username/scrum-board.git
+git clone https://github.com/suryabaskaran15/scrum-board.git
 cd scrum-board
 ```
 
