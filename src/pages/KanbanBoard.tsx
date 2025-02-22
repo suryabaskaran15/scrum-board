@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useRef, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { useTasks, useUpdateTask } from "../api/taskServices";
 import TaskCard from "../components/TaskCard";
@@ -9,43 +9,34 @@ import { Task } from "../types/types";
 import Loader from "../components/Loader";
 
 const KanbanBoard = () => {
-    const { data: fetchedTasks, isLoading } = useTasks();
+    const { data: tasks, isLoading } = useTasks();
+    const [drafts , setDrafts] = useState<Task[]>([]);
+    const formData= useRef<Task|null>(null);
     const updateTask = useUpdateTask();
-
-    const [tasks, setTasks] = useState<Task[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [taskToEdit, setTaskToEdit] = useState<Task | null>(null);
 
     const columns = ["To Do", "In Progress", "Done"];
 
-    // Sync local state with fetched data
-    useEffect(() => {
-        if (fetchedTasks) {
-            setTasks(fetchedTasks);
-        }
-    }, [fetchedTasks]);
-
-    const onDragEnd = (result: any) => {
+    const onDragEnd = async (result: any) => {
         if (!result.destination) return;
-
-        const { draggableId, destination, source } = result;
-
-        // Find the dragged task
-        const draggedTaskIndex = tasks.findIndex((task) => task.id === draggableId);
-        if (draggedTaskIndex === -1) return;
-
-        const updatedTasks = [...tasks];
-        const [movedTask] = updatedTasks.splice(draggedTaskIndex, 1); // Remove task
-        movedTask.status = destination.droppableId; // Update status
-        updatedTasks.splice(source.index, 0, movedTask); // Insert at new position
-
-        // Update state optimistically
-        setTasks(updatedTasks);
-
-        // Send API request to persist the update
-        updateTask.mutate({ id: draggableId, status: destination.droppableId });
+    
+        const { draggableId, destination } = result;
+        const draggedTask = tasks?.find((task) => task.id === draggableId);
+        if (!draggedTask) return;
+    
+        // Update positions in the local array
+        let updatedTasks = [...tasks!].filter((task) => task.id !== draggableId);
+        updatedTasks.splice(destination.index, 0, { ...draggedTask, position: destination.index, status: destination.droppableId });
+    
+        // Assign new positions
+        updatedTasks = updatedTasks.map((task, index) => ({ ...task, position: index }));
+    
+        // Send bulk update request
+        await updateTask.mutateAsync(updatedTasks);
     };
+    
 
     const openModal = () => {
         setIsModalOpen(true);
@@ -55,12 +46,24 @@ const KanbanBoard = () => {
     const closeModal = () => {
         setIsModalOpen(false);
         setTaskToEdit(null);
+        if(formData.current){
+
+            setDrafts((prev)=>[...prev, {...formData.current!}]);
+        }
+        // formData.current = null;
+        console.log(drafts);
     };
 
     const handleEditTask = (task: Task) => {
-        setTaskToEdit(task);
+        const draft = drafts.find((datum)=>datum?.id == task.id);
+        if(draft){
+            setTaskToEdit({...draft , isDraft:true});
+        }else{
+            setTaskToEdit(task);
+        }
         setIsEditMode(true);
         setIsModalOpen(true);
+
     };
 
     if (isLoading) return <Loader />;
@@ -69,9 +72,7 @@ const KanbanBoard = () => {
         <div className="kanban-container">
             <div className="kanban-header">
                 <h1>Task Management</h1>
-                <Button variant="primary" onClick={openModal}>
-                    Add Task
-                </Button>
+                <Button variant="primary" onClick={openModal}>Add Task</Button>
             </div>
 
             {/* Bootstrap Modal */}
@@ -80,7 +81,7 @@ const KanbanBoard = () => {
                     <Modal.Title>{isEditMode ? "Edit Task" : "Add New Task"}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <TaskForm onClose={closeModal} taskToEdit={taskToEdit} isEditMode={isEditMode} />
+                    <TaskForm onClose={closeModal} taskToEdit={taskToEdit} formData={formData} isEditMode={isEditMode} />
                 </Modal.Body>
             </Modal>
 
@@ -94,14 +95,11 @@ const KanbanBoard = () => {
                                     <div className="tasks-container">
                                         {tasks
                                             ?.filter((task) => task.status === status)
+                                            .sort((a, b) => a.position - b.position) // Sort by position
                                             .map((task, index) => (
                                                 <Draggable key={task.id} draggableId={String(task.id)} index={index}>
                                                     {(provided) => (
-                                                        <TaskCard
-                                                            task={task}
-                                                            provided={provided}
-                                                            onEdit={handleEditTask}
-                                                        />
+                                                        <TaskCard task={task} provided={provided} onEdit={handleEditTask} />
                                                     )}
                                                 </Draggable>
                                             ))}

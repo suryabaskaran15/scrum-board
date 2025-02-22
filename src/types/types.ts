@@ -6,6 +6,8 @@ export interface Task {
   description?: string;
   assignee: User | null;
   status: TaskStatus;
+  position: number;
+  isDraft?:boolean;
 }
 
 export interface User {

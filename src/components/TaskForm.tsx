@@ -10,13 +10,19 @@ interface TaskFormProps {
     taskToEdit: Task | null;
     isEditMode: boolean;
     onClose: () => void;
+    formData: React.RefObject<Task | null>;
 }
 
-const TaskForm = ({ taskToEdit, isEditMode, onClose }: TaskFormProps) => {
+const TaskForm = ({ taskToEdit, isEditMode, onClose, formData }: TaskFormProps) => {
     const [users, setUsers] = useState<User[]>([]);
 
     const addTask = useAddTask();
     const editTask = useEditTask();
+
+    const handleFoemOnChange = (e) => {
+        const key = e.target.attributes.name.value;
+        formData.current = {...taskToEdit ,[key]:e.target.value } as Task;
+    }
 
     // Fetch users on component mount
     useEffect(() => {
@@ -63,25 +69,25 @@ const TaskForm = ({ taskToEdit, isEditMode, onClose }: TaskFormProps) => {
             }}
         >
             {({ handleSubmit }) => (
-                <Form onSubmit={handleSubmit}>
+                <Form onSubmit={handleSubmit} onChange={handleFoemOnChange}>
                     {/* Task Title */}
                     <div className="mb-3">
                         <label className="form-label">Task Title</label>
-                        <Field type="text" name="title" className="form-control" placeholder="Enter task title" />
+                        <Field type="text" name="title" className={`form-control ${taskToEdit?.isDraft && "text-danger"}`} placeholder="Enter task title" />
                         <ErrorMessage name="title" component="div" className="text-danger" />
                     </div>
 
                     {/* Description */}
                     <div className="mb-3">
                         <label className="form-label">Description</label>
-                        <Field as="textarea" name="description" className="form-control" rows={3} placeholder="Enter task description" />
+                        <Field as="textarea" name="description" className={`form-control ${taskToEdit?.isDraft && "text-danger"}`} rows={3} placeholder="Enter task description" />
                         <ErrorMessage name="description" component="div" className="text-danger" />
                     </div>
 
                     {/* Assignee */}
                     <div className="mb-3">
                         <label className="form-label">Assignee</label>
-                        <Field as="select" name="assignee" className="form-select">
+                        <Field as="select" name="assignee" className={`form-select  ${taskToEdit && "text-danger"}`}>
                             <option value="0">Unassigned</option>
                             {users.map((user) => (
                                 <option key={user.id} value={user.id.toString()}>
@@ -94,7 +100,7 @@ const TaskForm = ({ taskToEdit, isEditMode, onClose }: TaskFormProps) => {
                     {/* Status */}
                     <div className="mb-3">
                         <label className="form-label">Status</label>
-                        <Field as="select" name="status" className="form-select">
+                        <Field as="select" name="status" className={`form-select  ${taskToEdit?.isDraft && "text-danger"}`}>
                             <option value="To Do">To Do</option>
                             <option value="In Progress">In Progress</option>
                             <option value="Done">Done</option>

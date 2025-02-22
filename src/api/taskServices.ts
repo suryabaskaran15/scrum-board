@@ -25,9 +25,9 @@ export const useAddTask = () => {
 export const useUpdateTask = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: async ({ id, status }: { id: number; status: TaskStatus }) =>
-            (await apiClient.patch(`${TASKS_URL}/${id}`, { status })).data,
-        // onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
+        mutationFn: async (updatedTasks: Task[]) =>
+            (await apiClient.post('/tasks',  [...updatedTasks] )).data,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["tasks"] }),
     });
 };
 
